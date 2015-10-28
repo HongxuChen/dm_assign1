@@ -2,9 +2,9 @@
 from __future__ import print_function
 import os
 import pickle
-import logging
 
 import numpy as np
+
 import utils
 
 data_file = 'data.csv'
@@ -20,11 +20,11 @@ LABEL_FEAT = SHAPE[1] - GROUP1[0] * GROUP1[1] - GROUP2[0] * GROUP2[1]
 class Reader(object):
     def __init__(self):
         if os.path.isfile(data_pickle):
-            utils.get_logger().info('{} does not exist'.format(data_pickle))
+            utils.get_logger().warning('{} exists'.format(data_pickle))
             with open(data_pickle, 'rb') as raw_data:
                 self.data = pickle.load(raw_data)
         else:
-            utils.get_logger().info('{} exists'.format(data_pickle))
+            utils.get_logger().warning('{} does not exist'.format(data_pickle))
             assert os.path.isfile(data_file)
             self.data = np.genfromtxt(data_file, delimiter=',')
             with open(data_pickle, 'wb') as raw_data:
