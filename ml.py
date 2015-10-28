@@ -23,7 +23,14 @@ clf_dict = {
     'knn': neighbors.KNeighborsClassifier,
     'rf': ensemble.RandomForestClassifier,
     'gb': ensemble.GradientBoostingClassifier,
-    'ab': ensemble.AdaBoostClassifier
+    'ab': ensemble.AdaBoostClassifier,
+    'bg': ensemble.BaggingClassifier
+}
+
+forest_estimator_dict = {
+    'rf': range(8, 13),
+    'ab': range(80, 135, 5),
+    'bg': range(8, 13)
 }
 
 
@@ -112,11 +119,6 @@ def knn_run():
         print('{:<2d} {:<15.6f}'.format(i, score))
 
 
-forest_estimator_dict = {
-    'rf': range(8, 13),
-    'ab': range(80, 135, 5)
-}
-
 if __name__ == '__main__':
     utils.init_logger()
     d = dataset.DataReader()
@@ -128,5 +130,5 @@ if __name__ == '__main__':
     # rf_run()
     # knn_run()
     # gb_run()
-    name = 'ab'
+    name = 'bg'
     forest_run(name, forest_estimator_dict[name])
