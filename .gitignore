@@ -1,2 +1,4 @@
 /.idea/
 *.pkl
+/.ipynb_checkpoints/
+*.pyc
