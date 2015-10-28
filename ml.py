@@ -21,7 +21,9 @@ clf_dict = {
     'svc': svm.SVC,
     'sgd': linear_model.SGDClassifier,
     'knn': neighbors.KNeighborsClassifier,
-    'rf': ensemble.RandomForestClassifier
+    'rf': ensemble.RandomForestClassifier,
+    'gb': ensemble.GradientBoostingClassifier,
+    'ab': ensemble.AdaBoostClassifier
 }
 
 
@@ -89,14 +91,13 @@ def svm_run():
         print('{:20s}: {:15.6f}'.format(c.clf_name, score))
 
 
-def rf_run():
+def forest_run(name, estimators):
     scores = []
-    rf_range = range(8, 13)
-    for i in rf_range:
-        rf = Classifier('rf', d, split_dict, n_estimators=i)
+    for i in estimators:
+        rf = Classifier(name, d, split_dict, n_estimators=i)
         score = rf.cross_validation()
         scores.append(score)
-    for i, score in zip(rf_range, scores):
+    for i, score in zip(estimators, scores):
         print('i={:<2d}, score={:<15.6f}'.format(i, score))
 
 
@@ -111,6 +112,11 @@ def knn_run():
         print('{:<2d} {:<15.6f}'.format(i, score))
 
 
+forest_estimator_dict = {
+    'rf': range(8, 13),
+    'ab': range(80, 135, 5)
+}
+
 if __name__ == '__main__':
     utils.init_logger()
     d = dataset.DataReader()
@@ -120,4 +126,7 @@ if __name__ == '__main__':
     }
     INDEX = 5
     # rf_run()
-    knn_run()
+    # knn_run()
+    # gb_run()
+    name = 'ab'
+    forest_run(name, forest_estimator_dict[name])
