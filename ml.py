@@ -12,9 +12,10 @@ from sklearn.cross_validation import train_test_split
 from sklearn import ensemble
 
 import dataset
+import plotter
 import utils
 
-GROUP_NUM = 5
+GROUP_NUM = 4
 
 model_dir = 'models'
 if not os.path.exists(model_dir):
@@ -60,10 +61,23 @@ def dict_to_str(data_dict):
 
 
 def try_group(label_feat):
+    label_feat = label_feat.astype(np.int8)
     uniques = np.unique(label_feat)
     if uniques.shape[0] < GROUP_NUM:
         return label_feat
-    print(np.max(label_feat), np.min(label_feat))
+    utils.get_logger().info('dimension={}, needs fitting'.format(uniques.shape[0]))
+    fittted_feat = np.zeros(label_feat.shape, dtype=int)
+    separators = np.linspace(np.min(label_feat), np.max(label_feat), GROUP_NUM)
+    print(separators)
+    for i in xrange(label_feat.shape[0]):
+        for j in xrange(GROUP_NUM - 1):
+            # print(separators[j], label_feat[i], separators[j+1])
+            if separators[j] <= label_feat[i] < separators[j + 1]:
+                fittted_feat[i] = j
+                break
+        else:
+            fittted_feat[i] = GROUP_NUM - 1
+    return fittted_feat
 
 
 class Monitered(object):
@@ -102,9 +116,11 @@ class Monitered(object):
             cleaned = concat[~np.isnan(concat).any(axis=1)]
             sample_feats = cleaned[:, :-1]
             label_feat = cleaned[:, -1]
-            utils.get_logger().warning('sample:{}, label:{}'.format(self.sample_feats.shape, self.label_feat.shape))
+            utils.get_logger().warning('sample:{}, label:{}'.format(sample_feats.shape, label_feat.shape))
         if utils.isclf_dict[index]:
+            utils.get_logger().warning('try grouping {}'.format(plotter.label_dict[index]))
             label_feat = try_group(label_feat)
+            plotter.plot_pie(label_feat, index)
         return sample_feats, label_feat
 
     def cross_validation(self):
@@ -174,6 +190,12 @@ def knn(name):
         print('{:<2d} {:<15.6f}'.format(i, score))
 
 
+def run_once():
+    global INDEX
+    for INDEX in [0, 1, 4, 5]:
+        sgd('sgd')
+
+
 def run():
     global INDEX
     for INDEX in [0, 1, 4, 5]:
@@ -203,4 +225,5 @@ if __name__ == '__main__':
         'random_state': 42,
         'train_size': 0.8
     }
-    run()
+    run_once()
+    # run()

@@ -9,7 +9,7 @@ handlers:
   console:
     class: logging.StreamHandler
     formatter: simpleFormatter
-    level: ERROR
+    level: DEBUG
     stream: ext://sys.stdout
 
 root:

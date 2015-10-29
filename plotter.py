@@ -24,9 +24,8 @@ label_dict = {
 
 
 def plot_pie(d, index):
-    y = d.label_feats[:, index].astype(np.int32)
-    size = y.shape[0]
-    v_c_dict = collections.Counter(y)
+    size = d.shape[0]
+    v_c_dict = collections.Counter(d)
     v_p_dict = {v: c / float(size) for v, c in v_c_dict.items()}
     # labels = [gender_dict[v] for v in v_p_dict.keys()]
     labels = v_p_dict.keys()
@@ -34,14 +33,16 @@ def plot_pie(d, index):
     plt.pie(
         values,
         labels=labels,
-        autopct='%4.2f%%',
+        autopct='%.1f%%',
         shadow=False,
         startangle=90)
     plt.axis('equal')
-    title = label_dict[index]
-    plt.title(title, bbox={'facecolor': '0.8', 'pad': 5})
-    fname = os.path.join(info_dir, title + '.png')
+    title = label_dict[index] + ' total={}'.format(size)
+    # plt.title(title, loc='center')
+    plt.title(title, bbox={'facecolor': '0.8', 'pad': 5}, loc='right')
+    fname = os.path.join(info_dir, label_dict[index] + '.png')
     plt.savefig(fname)
+    plt.clf()
 
 
 if __name__ == '__main__':
