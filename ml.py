@@ -2,6 +2,7 @@
 from __future__ import print_function
 import os
 import pickle
+import sys
 
 import numpy as np
 from sklearn import svm, linear_model
@@ -9,9 +10,11 @@ from sklearn import neighbors
 from sklearn.metrics import accuracy_score, r2_score
 from sklearn.cross_validation import train_test_split
 from sklearn import ensemble
-import sys
+
 import dataset
 import utils
+
+GROUP_NUM = 5
 
 model_dir = 'models'
 if not os.path.exists(model_dir):
@@ -19,7 +22,7 @@ if not os.path.exists(model_dir):
 
 clf_dict = {
     # classifier
-    'lin_svc': svm.LinearSVC,
+    # 'lin_svc': svm.LinearSVC,
     'svc': svm.SVC,
     'sgd': linear_model.SGDClassifier,
     'knn': neighbors.KNeighborsClassifier,
@@ -56,20 +59,18 @@ def dict_to_str(data_dict):
     return s
 
 
+def try_group(label_feat):
+    uniques = np.unique(label_feat)
+    if uniques.shape[0] < GROUP_NUM:
+        return label_feat
+    print(np.max(label_feat), np.min(label_feat))
+
+
 class Monitered(object):
-    def __init__(self, clfname, data, split_dict, **kwargs):
-        self.data = data
-        self.sample_feats = self.data.sample_feats
-        self.label_feat = self.data.label_feats[:, INDEX]
-        concat = np.column_stack((self.sample_feats, self.label_feat))
-        if np.any(np.isnan(self.label_feat)):
-            utils.get_logger().warning('contains NAN')
-            cleaned = concat[~np.isnan(concat).any(axis=1)]
-            self.sample_feats = cleaned[:, :-1]
-            self.label_feat = cleaned[:, -1]
-            utils.get_logger().warning('sample:{}, label:{}'.format(self.sample_feats.shape, self.label_feat.shape))
+    def __init__(self, ml_name, data, split_dict, **kwargs):
+        self.sample_feats, self.label_feat = self.preprocessing(data.sample_feats, data.label_feats, INDEX)
         assert np.all(np.isfinite(self.label_feat))
-        self.clf_name = clfname
+        self.ml_name = ml_name
         # training and test
         self.Xtrain, self.Xtest, self.ytrain, self.ytest = \
             train_test_split(self.sample_feats, self.label_feat, **split_dict)
@@ -77,9 +78,9 @@ class Monitered(object):
         train_test_str = '-' + dict_to_str(split_dict)
         if kwargs is not None and len(kwargs) != 0:
             classifier_str = '-' + dict_to_str(kwargs)
-            pickle_name = str(INDEX) + '-' + self.clf_name + train_test_str + classifier_str + '.pkl'
+            pickle_name = str(INDEX) + '-' + self.ml_name + train_test_str + classifier_str + '.pkl'
         else:
-            pickle_name = str(INDEX) + '-' + self.clf_name + train_test_str + '.pkl'
+            pickle_name = str(INDEX) + '-' + self.ml_name + train_test_str + '.pkl'
         model_pickle = os.path.join(model_dir, pickle_name)
         if os.path.exists(model_pickle):
             utils.get_logger().warning('{} exists'.format(model_pickle))
@@ -92,6 +93,19 @@ class Monitered(object):
             with open(model_pickle, 'wb') as model:
                 pickle.dump(self.clf, model)
                 # utils.get_logger().warning('CLF info\n{}'.format(self.clf))
+
+    def preprocessing(self, sample_feats, label_feats, index):
+        label_feat = label_feats[:, index]
+        concat = np.column_stack((sample_feats, label_feat))
+        if np.any(np.isnan(label_feat)):
+            utils.get_logger().warning('contains NAN')
+            cleaned = concat[~np.isnan(concat).any(axis=1)]
+            sample_feats = cleaned[:, :-1]
+            label_feat = cleaned[:, -1]
+            utils.get_logger().warning('sample:{}, label:{}'.format(self.sample_feats.shape, self.label_feat.shape))
+        if utils.isclf_dict[index]:
+            label_feat = try_group(label_feat)
+        return sample_feats, label_feat
 
     def cross_validation(self):
         ypred = self.clf.predict(self.Xtest)
@@ -106,7 +120,7 @@ class Monitered(object):
                 sys.exit(1)
 
     def get_clf(self, kwargs):
-        clf = clf_dict[self.clf_name](**kwargs)
+        clf = clf_dict[self.ml_name](**kwargs)
         return clf
 
 
@@ -125,7 +139,7 @@ def svm_classifier():
     sgd = Monitered('sgd', d, split_dict)
     for c in [lin_svc, svc_linear, svc_rbf, svc_poly1, svc_poly2, sgd]:
         score = c.cross_validation()
-        print('{:20s}: {:15.6f}'.format(c.clf_name, score))
+        print('{:20s}: {:15.6f}'.format(c.ml_name, score))
 
 
 def svm_regression():
@@ -136,7 +150,7 @@ def svm_regression():
     svr_poly2 = Monitered('svr', d, split_dict, kernel='poly', degree=5)
     for c in [lin_svr, svr_linear, svr_rbf, svr_poly1, svr_poly2]:
         score = c.cross_validation()
-        print('{:20s} {:15.6f}'.format(c.clf_name, score))
+        print('{:20s} {:15.6f}'.format(c.ml_name, score))
 
 
 def forest(name, estimators):
@@ -163,16 +177,19 @@ def knn(name):
 def run():
     global INDEX
     for INDEX in [0, 1, 4, 5]:
-        svm_classifier()
         sgd('sgd')
+        continue
+        svm_classifier()
         knn('knn')
         # forests
         names = ['rf', 'ab', 'bg']
         for name in names:
             forest(name, forest_estimator_dict[name])
+    sys.exit(0)
     for INDEX in [2, 3]:
-        svm_regression()
         sgd('sgdr')
+        continue
+        svm_regression()
         knn('knnr')
         names = ['rfr', 'abr', 'bgr']
         for name in names:

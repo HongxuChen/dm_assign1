@@ -1,10 +1,19 @@
 #!/usr/bin/env python
 import logging
-import sys
-import yaml
 import logging.config
 
+import yaml
+
 logging_yaml = 'log.yaml'
+
+isclf_dict = {
+    0: True,
+    1: True,
+    2: False,
+    3: False,
+    4: True,
+    5: True
+}
 
 
 def init_logger():

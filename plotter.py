@@ -6,13 +6,14 @@ import os
 import matplotlib.pyplot as plt
 import numpy as np
 
+import utils
 import dataset
 
 info_dir = 'info'
 if not os.path.exists(info_dir):
     os.mkdir(info_dir)
 
-meaning = {
+label_dict = {
     0: 'age',
     1: 'height',
     2: 'weight',
@@ -37,7 +38,7 @@ def plot_pie(d, index):
         shadow=False,
         startangle=90)
     plt.axis('equal')
-    title = meaning[index]
+    title = label_dict[index]
     plt.title(title, bbox={'facecolor': '0.8', 'pad': 5})
     fname = os.path.join(info_dir, title + '.png')
     plt.savefig(fname)
