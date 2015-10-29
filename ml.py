@@ -6,9 +6,10 @@ import pickle
 import numpy as np
 from sklearn import svm, linear_model
 from sklearn import neighbors
-from sklearn.metrics import accuracy_score
+from sklearn.metrics import accuracy_score, r2_score
 from sklearn.cross_validation import train_test_split
 from sklearn import ensemble
+import sys
 import dataset
 import utils
 
@@ -17,6 +18,7 @@ if not os.path.exists(model_dir):
     os.mkdir(model_dir)
 
 clf_dict = {
+    # classifier
     'lin_svc': svm.LinearSVC,
     'svc': svm.SVC,
     'sgd': linear_model.SGDClassifier,
@@ -24,13 +26,27 @@ clf_dict = {
     'rf': ensemble.RandomForestClassifier,
     'gb': ensemble.GradientBoostingClassifier,
     'ab': ensemble.AdaBoostClassifier,
-    'bg': ensemble.BaggingClassifier
+    'bg': ensemble.BaggingClassifier,
+    # regressor
+    'lin_svr': svm.LinearSVR,
+    'svr': svm.SVR,
+    'sgdr': linear_model.SGDRegressor,
+    'knnr': neighbors.KNeighborsRegressor,
+    'rfr': ensemble.RandomForestRegressor,
+    'gbr': ensemble.GradientBoostingRegressor,
+    'abr': ensemble.AdaBoostRegressor,
+    'bgr': ensemble.BaggingRegressor
 }
 
 forest_estimator_dict = {
     'rf': range(8, 13),
-    'ab': range(80, 135, 5),
-    'bg': range(8, 13)
+    'ab': range(80, 131, 10),
+    'bg': range(8, 13),
+    'gb': range(80, 131, 10),
+    'rfr': range(8, 13),
+    'abr': range(40, 61, 5),
+    'bgr': range(8, 13),
+    'gbr': range(80, 131, 10),
 }
 
 
@@ -40,7 +56,7 @@ def dict_to_str(data_dict):
     return s
 
 
-class Classifier(object):
+class Monitered(object):
     def __init__(self, clfname, data, split_dict, **kwargs):
         self.data = data
         self.sample_feats = self.data.sample_feats
@@ -79,44 +95,88 @@ class Classifier(object):
 
     def cross_validation(self):
         ypred = self.clf.predict(self.Xtest)
-        return accuracy_score(self.ytest, ypred)
+        try:
+            return accuracy_score(self.ytest, ypred)
+        except ValueError as e:
+            if e.message == 'continuous is not supported':
+                utils.get_logger().warning('regression, using r2_score')
+                return r2_score(self.ytest, ypred)
+            else:
+                utils.get_logger().critical('UNKNOWN')
+                sys.exit(1)
 
     def get_clf(self, kwargs):
         clf = clf_dict[self.clf_name](**kwargs)
         return clf
 
 
-def svm_run():
-    lin_svc = Classifier('lin_svc', d, split_dict)
-    svc_linear = Classifier('svc', d, split_dict, kernel='linear')
-    svc_rbf = Classifier('svc', d, split_dict)
-    svc_poly1 = Classifier('svc', d, split_dict, kernel='poly', degree=3)
-    svc_poly2 = Classifier('svc', d, split_dict, kernel='poly', degree=5)
-    sgd = Classifier('sgd', d, split_dict)
+def sgd(name):
+    c = Monitered(name, d, split_dict)
+    score = c.cross_validation()
+    print('{:20s} {:15.6f}'.format(name, score))
+
+
+def svm_classifier():
+    lin_svc = Monitered('lin_svc', d, split_dict)
+    svc_linear = Monitered('svc', d, split_dict, kernel='linear')
+    svc_rbf = Monitered('svc', d, split_dict)
+    svc_poly1 = Monitered('svc', d, split_dict, kernel='poly', degree=3)
+    svc_poly2 = Monitered('svc', d, split_dict, kernel='poly', degree=5)
+    sgd = Monitered('sgd', d, split_dict)
     for c in [lin_svc, svc_linear, svc_rbf, svc_poly1, svc_poly2, sgd]:
         score = c.cross_validation()
         print('{:20s}: {:15.6f}'.format(c.clf_name, score))
 
 
-def forest_run(name, estimators):
+def svm_regression():
+    lin_svr = Monitered('lin_svr', d, split_dict)
+    svr_linear = Monitered('svr', d, split_dict, kernel='linear')
+    svr_rbf = Monitered('svr', d, split_dict, kernel='rbf')
+    svr_poly1 = Monitered('svr', d, split_dict, kernel='poly', degree=3)
+    svr_poly2 = Monitered('svr', d, split_dict, kernel='poly', degree=5)
+    for c in [lin_svr, svr_linear, svr_rbf, svr_poly1, svr_poly2]:
+        score = c.cross_validation()
+        print('{:20s} {:15.6f}'.format(c.clf_name, score))
+
+
+def forest(name, estimators):
     scores = []
     for i in estimators:
-        rf = Classifier(name, d, split_dict, n_estimators=i)
+        rf = Monitered(name, d, split_dict, n_estimators=i)
         score = rf.cross_validation()
         scores.append(score)
     for i, score in zip(estimators, scores):
         print('i={:<2d}, score={:<15.6f}'.format(i, score))
 
 
-def knn_run():
+def knn(name):
     scores = []
     knn_range = range(2, 6)
     for i in knn_range:
-        knn = Classifier('knn', d, split_dict, n_neighbors=i)
+        knn = Monitered(name, d, split_dict, n_neighbors=i)
         score = knn.cross_validation()
         scores.append(score)
     for i, score in zip(knn_range, scores):
         print('{:<2d} {:<15.6f}'.format(i, score))
+
+
+def run():
+    global INDEX
+    for INDEX in [0, 1, 4, 5]:
+        svm_classifier()
+        sgd('sgd')
+        knn('knn')
+        # forests
+        names = ['rf', 'ab', 'bg']
+        for name in names:
+            forest(name, forest_estimator_dict[name])
+    for INDEX in [2, 3]:
+        svm_regression()
+        sgd('sgdr')
+        knn('knnr')
+        names = ['rfr', 'abr', 'bgr']
+        for name in names:
+            forest(name, forest_estimator_dict[name])
 
 
 if __name__ == '__main__':
@@ -126,9 +186,4 @@ if __name__ == '__main__':
         'random_state': 42,
         'train_size': 0.8
     }
-    INDEX = 5
-    # rf_run()
-    # knn_run()
-    # gb_run()
-    name = 'bg'
-    forest_run(name, forest_estimator_dict[name])
+    run()
