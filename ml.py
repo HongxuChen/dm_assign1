@@ -2,7 +2,6 @@
 from __future__ import print_function
 import os
 import pickle
-import sys
 
 import numpy as np
 from sklearn import svm, linear_model
@@ -15,7 +14,9 @@ import dataset
 import plotter
 import utils
 
-GROUP_NUM = 4
+GROUP_NUM = 5
+
+NO_GROUP_LIST = [4, 5]
 
 model_dir = 'models'
 if not os.path.exists(model_dir):
@@ -23,7 +24,7 @@ if not os.path.exists(model_dir):
 
 clf_dict = {
     # classifier
-    # 'lin_svc': svm.LinearSVC,
+    'lin_svc': svm.LinearSVC,
     'svc': svm.SVC,
     'sgd': linear_model.SGDClassifier,
     'knn': neighbors.KNeighborsClassifier,
@@ -68,7 +69,6 @@ def try_group(label_feat):
     utils.get_logger().info('dimension={}, needs fitting'.format(uniques.shape[0]))
     fittted_feat = np.zeros(label_feat.shape, dtype=int)
     separators = np.linspace(np.min(label_feat), np.max(label_feat), GROUP_NUM)
-    print(separators)
     for i in xrange(label_feat.shape[0]):
         for j in xrange(GROUP_NUM - 1):
             # print(separators[j], label_feat[i], separators[j+1])
@@ -108,7 +108,8 @@ class Monitered(object):
                 pickle.dump(self.clf, model)
                 # utils.get_logger().warning('CLF info\n{}'.format(self.clf))
 
-    def preprocessing(self, sample_feats, label_feats, index):
+    @staticmethod
+    def preprocessing(sample_feats, label_feats, index):
         label_feat = label_feats[:, index]
         concat = np.column_stack((sample_feats, label_feat))
         if np.any(np.isnan(label_feat)):
@@ -119,21 +120,17 @@ class Monitered(object):
             utils.get_logger().warning('sample:{}, label:{}'.format(sample_feats.shape, label_feat.shape))
         if utils.isclf_dict[index]:
             utils.get_logger().warning('try grouping {}'.format(plotter.label_dict[index]))
-            label_feat = try_group(label_feat)
+            if index not in NO_GROUP_LIST:
+                label_feat = try_group(label_feat)
             plotter.plot_pie(label_feat, index)
         return sample_feats, label_feat
 
     def cross_validation(self):
         ypred = self.clf.predict(self.Xtest)
-        try:
+        if utils.isclf_dict[INDEX]:
             return accuracy_score(self.ytest, ypred)
-        except ValueError as e:
-            if e.message == 'continuous is not supported':
-                utils.get_logger().warning('regression, using r2_score')
-                return r2_score(self.ytest, ypred)
-            else:
-                utils.get_logger().critical('UNKNOWN')
-                sys.exit(1)
+        else:
+            return r2_score(self.ytest, ypred)
 
     def get_clf(self, kwargs):
         clf = clf_dict[self.ml_name](**kwargs)
@@ -141,12 +138,15 @@ class Monitered(object):
 
 
 def sgd(name):
+    print('sgd: {}'.format(name))
     c = Monitered(name, d, split_dict)
     score = c.cross_validation()
-    print('{:20s} {:15.6f}'.format(name, score))
+    print('{:<10s} {:<15.6f}'.format(name, score))
+    print()
 
 
 def svm_classifier():
+    print('svm classification')
     lin_svc = Monitered('lin_svc', d, split_dict)
     svc_linear = Monitered('svc', d, split_dict, kernel='linear')
     svc_rbf = Monitered('svc', d, split_dict)
@@ -155,10 +155,12 @@ def svm_classifier():
     sgd = Monitered('sgd', d, split_dict)
     for c in [lin_svc, svc_linear, svc_rbf, svc_poly1, svc_poly2, sgd]:
         score = c.cross_validation()
-        print('{:20s}: {:15.6f}'.format(c.ml_name, score))
+        print('{:<10s}: {:<15.6f}'.format(c.ml_name, score))
+    print()
 
 
 def svm_regression():
+    print('---svm regression---')
     lin_svr = Monitered('lin_svr', d, split_dict)
     svr_linear = Monitered('svr', d, split_dict, kernel='linear')
     svr_rbf = Monitered('svr', d, split_dict, kernel='rbf')
@@ -166,10 +168,16 @@ def svm_regression():
     svr_poly2 = Monitered('svr', d, split_dict, kernel='poly', degree=5)
     for c in [lin_svr, svr_linear, svr_rbf, svr_poly1, svr_poly2]:
         score = c.cross_validation()
-        print('{:20s} {:15.6f}'.format(c.ml_name, score))
+        print('{:<10s} {:<15.6f}'.format(c.ml_name, score))
+    print()
 
 
 def forest(name, estimators):
+    if name in ['rf', 'ab', 'bg']:
+        kind = 'classification'
+    else:
+        kind = 'regression'
+    print('forest, name={}'.format(name))
     scores = []
     for i in estimators:
         rf = Monitered(name, d, split_dict, n_estimators=i)
@@ -177,9 +185,16 @@ def forest(name, estimators):
         scores.append(score)
     for i, score in zip(estimators, scores):
         print('i={:<2d}, score={:<15.6f}'.format(i, score))
+    print()
 
 
 def knn(name):
+    assert name in ['knn', 'knnr']
+    if name == 'knn':
+        kind = 'classifications'
+    else:
+        kind = 'regressions'
+    print('knn '.format(kind))
     scores = []
     knn_range = range(2, 6)
     for i in knn_range:
@@ -187,7 +202,8 @@ def knn(name):
         score = knn.cross_validation()
         scores.append(score)
     for i, score in zip(knn_range, scores):
-        print('{:<2d} {:<15.6f}'.format(i, score))
+        print('i={:<2d} {:<15.6f}'.format(i, score))
+    print()
 
 
 def run_once():
@@ -198,24 +214,23 @@ def run_once():
 
 def run():
     global INDEX
-    for INDEX in [0, 1, 4, 5]:
+    indexs = range(0, 6)
+    for INDEX in indexs:
+        print('\n======\n{}\n======'.format(plotter.label_dict[INDEX]))
         sgd('sgd')
-        continue
         svm_classifier()
         knn('knn')
         # forests
         names = ['rf', 'ab', 'bg']
         for name in names:
             forest(name, forest_estimator_dict[name])
-    sys.exit(0)
-    for INDEX in [2, 3]:
-        sgd('sgdr')
-        continue
-        svm_regression()
-        knn('knnr')
-        names = ['rfr', 'abr', 'bgr']
-        for name in names:
-            forest(name, forest_estimator_dict[name])
+            # for INDEX in [2, 3]:
+            #     sgd('sgdr')
+            #     svm_regression()
+            #     knn('knnr')
+            #     names = ['rfr', 'abr', 'bgr']
+            #     for name in names:
+            #         forest(name, forest_estimator_dict[name])
 
 
 if __name__ == '__main__':
@@ -225,5 +240,5 @@ if __name__ == '__main__':
         'random_state': 42,
         'train_size': 0.8
     }
-    run_once()
-    # run()
+    # run_once()
+    run()
