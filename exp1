@@ -1,0 +1,298 @@
+======
+age
+======
+sgd: sgd
+iter=3  score=32.47          
+iter=4  score=36.78          
+iter=5  score=50.00          
+iter=6  score=36.21          
+iter=7  score=33.19          
+
+svm classification
+kernel=lin_svc    score=61.49          
+kernel=linear     score=59.05          
+kernel=rbf        score=38.65          
+kernel=poly
+  degree=2 , score=33.19          
+  degree=3 , score=33.19          
+  degree=4 , score=33.19          
+  degree=5 , score=33.19          
+
+knn 
+estimators=2   71.70          
+estimators=3   73.13          
+estimators=4   72.70          
+estimators=5   70.40          
+estimators=6   69.83          
+
+forest classification, name=rf
+estimators=8  , score=58.62          
+estimators=9  , score=58.48          
+estimators=10 , score=59.48          
+estimators=11 , score=59.20          
+estimators=12 , score=61.49          
+
+forest classification, name=ab
+estimators=80 , score=39.08          
+estimators=90 , score=38.07          
+estimators=100, score=36.64          
+estimators=110, score=36.93          
+estimators=120, score=37.79          
+estimators=130, score=38.65          
+
+forest classification, name=bg
+estimators=8  , score=61.93          
+estimators=9  , score=62.64          
+estimators=10 , score=64.66          
+estimators=11 , score=61.78          
+estimators=12 , score=63.36          
+
+
+======
+height
+======
+sgd: sgd
+iter=3  score=38.69          
+iter=4  score=43.75          
+iter=5  score=52.53          
+iter=6  score=52.53          
+iter=7  score=52.53          
+
+svm classification
+kernel=lin_svc    score=0.00           
+kernel=linear     score=0.00           
+kernel=rbf        score=0.00           
+kernel=poly
+  degree=2 , score=52.53          
+  degree=3 , score=0.00           
+  degree=4 , score=52.53          
+  degree=5 , score=0.00           
+
+knn 
+estimators=2   0.00           
+estimators=3   0.00           
+estimators=4   0.00           
+estimators=5   0.00           
+estimators=6   72.77          
+
+forest classification, name=rf
+estimators=8  , score=0.00           
+estimators=9  , score=0.00           
+estimators=10 , score=0.00           
+estimators=11 , score=0.00           
+estimators=12 , score=0.00           
+
+forest classification, name=ab
+estimators=80 , score=0.00           
+estimators=90 , score=0.00           
+estimators=100, score=0.00           
+estimators=110, score=0.00           
+estimators=120, score=0.00           
+estimators=130, score=0.00           
+
+forest classification, name=bg
+estimators=8  , score=0.00           
+estimators=9  , score=0.00           
+estimators=10 , score=0.00           
+estimators=11 , score=0.00           
+estimators=12 , score=0.00           
+
+
+======
+weight
+======
+sgd: sgd
+iter=3  score=55.31          
+iter=4  score=55.01          
+iter=5  score=59.04          
+iter=6  score=46.49          
+iter=7  score=59.04          
+
+svm classification
+kernel=lin_svc    score=62.33          
+kernel=linear     score=59.19          
+kernel=rbf        score=59.19          
+kernel=poly
+  degree=2 , score=59.19          
+  degree=3 , score=59.19          
+  degree=4 , score=59.19          
+  degree=5 , score=59.19          
+
+knn 
+estimators=2   77.43          
+estimators=3   77.73          
+estimators=4   76.38          
+estimators=5   77.28          
+estimators=6   74.59          
+
+forest classification, name=rf
+estimators=8  , score=59.49          
+estimators=9  , score=61.43          
+estimators=10 , score=63.38          
+estimators=11 , score=62.33          
+estimators=12 , score=63.83          
+
+forest classification, name=ab
+estimators=80 , score=48.43          
+estimators=90 , score=47.68          
+estimators=100, score=45.74          
+estimators=110, score=44.10          
+estimators=120, score=44.99          
+estimators=130, score=44.69          
+
+forest classification, name=bg
+estimators=8  , score=63.38          
+estimators=9  , score=61.88          
+estimators=10 , score=63.08          
+estimators=11 , score=66.97          
+estimators=12 , score=63.53          
+
+
+======
+bmi
+======
+sgd: sgd
+iter=3  score=55.46          
+iter=4  score=45.40          
+iter=5  score=27.73          
+iter=6  score=55.17          
+iter=7  score=47.84          
+
+svm classification
+kernel=lin_svc    score=57.33          
+kernel=linear     score=55.75          
+kernel=rbf        score=55.32          
+kernel=poly
+  degree=2 , score=55.32          
+  degree=3 , score=55.32          
+  degree=4 , score=55.32          
+  degree=5 , score=55.32          
+
+knn 
+estimators=2   72.27          
+estimators=3   71.84          
+estimators=4   71.12          
+estimators=5   71.84          
+estimators=6   69.40          
+
+forest classification, name=rf
+estimators=8  , score=57.33          
+estimators=9  , score=56.32          
+estimators=10 , score=56.61          
+estimators=11 , score=58.91          
+estimators=12 , score=57.47          
+
+forest classification, name=ab
+estimators=80 , score=50.86          
+estimators=90 , score=50.86          
+estimators=100, score=50.86          
+estimators=110, score=50.72          
+estimators=120, score=50.72          
+estimators=130, score=50.72          
+
+forest classification, name=bg
+estimators=8  , score=58.05          
+estimators=9  , score=59.05          
+estimators=10 , score=58.62          
+estimators=11 , score=63.79          
+estimators=12 , score=63.51          
+
+
+======
+gender
+======
+sgd: sgd
+iter=3  score=91.38          
+iter=4  score=92.96          
+iter=5  score=93.25          
+iter=6  score=92.82          
+iter=7  score=78.45          
+
+svm classification
+kernel=lin_svc    score=93.97          
+kernel=linear     score=92.96          
+kernel=rbf        score=91.38          
+kernel=poly
+  degree=2 , score=91.38          
+  degree=3 , score=91.38          
+  degree=4 , score=91.38          
+  degree=5 , score=91.38          
+
+knn 
+estimators=2   91.95          
+estimators=3   94.54          
+estimators=4   93.68          
+estimators=5   95.11          
+estimators=6   94.83          
+
+forest classification, name=rf
+estimators=8  , score=93.25          
+estimators=9  , score=92.96          
+estimators=10 , score=92.67          
+estimators=11 , score=94.25          
+estimators=12 , score=93.25          
+
+forest classification, name=ab
+estimators=80 , score=93.68          
+estimators=90 , score=93.53          
+estimators=100, score=93.82          
+estimators=110, score=93.82          
+estimators=120, score=94.25          
+estimators=130, score=94.11          
+
+forest classification, name=bg
+estimators=8  , score=92.10          
+estimators=9  , score=93.53          
+estimators=10 , score=93.39          
+estimators=11 , score=94.54          
+estimators=12 , score=94.40          
+
+
+======
+race
+======
+sgd: sgd
+iter=3  score=60.34          
+iter=4  score=47.99          
+iter=5  score=72.27          
+iter=6  score=70.26          
+iter=7  score=53.74          
+
+svm classification
+kernel=lin_svc    score=73.28          
+kernel=linear     score=73.28          
+kernel=rbf        score=58.05          
+kernel=poly
+  degree=2 , score=58.05          
+  degree=3 , score=58.05          
+  degree=4 , score=58.05          
+  degree=5 , score=58.05          
+
+knn 
+estimators=2   80.60          
+estimators=3   81.75          
+estimators=4   81.18          
+estimators=5   79.31          
+estimators=6   80.03          
+
+forest classification, name=rf
+estimators=8  , score=75.29          
+estimators=9  , score=74.14          
+estimators=10 , score=75.43          
+estimators=11 , score=75.29          
+estimators=12 , score=74.71          
+
+forest classification, name=ab
+estimators=80 , score=60.63          
+estimators=90 , score=60.34          
+estimators=100, score=60.34          
+estimators=110, score=59.20          
+estimators=120, score=60.20          
+estimators=130, score=59.91          
+
+forest classification, name=bg
+estimators=8  , score=77.59          
+estimators=9  , score=75.29          
+estimators=10 , score=78.16          
+estimators=11 , score=76.29          
+estimators=12 , score=76.01 

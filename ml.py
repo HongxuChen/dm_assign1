@@ -118,7 +118,7 @@ class Monitered(object):
             sample_feats = cleaned[:, :-1]
             label_feat = cleaned[:, -1]
             utils.get_logger().warning('sample:{}, label:{}'.format(sample_feats.shape, label_feat.shape))
-        if utils.isclf_dict[index]:
+        if ISCLF[index]:
             utils.get_logger().warning('try grouping {}'.format(utils.label_dict[index]))
             if index not in NO_GROUP_LIST:
                 label_feat = try_group(label_feat)
@@ -127,7 +127,7 @@ class Monitered(object):
 
     def cross_validation(self):
         ypred = self.clf.predict(self.Xtest)
-        if utils.isclf_dict[INDEX]:
+        if ISCLF[INDEX]:
             return accuracy_score(self.ytest, ypred)
         else:
             return r2_score(self.ytest, ypred)
@@ -140,51 +140,52 @@ class Monitered(object):
 def sgd(name):
     print('sgd: {}'.format(name))
     for i in range(3, 8):
-        c = Monitered(name, d, split_dict, n_iter=i)
+        c = Monitered(name, D, SPLIT_DICT, n_iter=i)
         score = c.cross_validation()
-        print('iter={:<2d} score={:<15.6f}'.format(i, score))
+        print('iter={:<2d} score={:<15.2f}'.format(i, score * 100))
     print()
 
 
 def svm_classifier():
     print('svm classification')
-    lin_svc = Monitered('lin_svc', d, split_dict)
+    lin_svc = Monitered('lin_svc', D, SPLIT_DICT)
     lin_svc.clf.kernel = 'lin_svc'
-    svc_linear = Monitered('svc', d, split_dict, kernel='linear')
-    svc_rbf = Monitered('svc', d, split_dict)
+    svc_linear = Monitered('svc', D, SPLIT_DICT, kernel='linear')
+    svc_rbf = Monitered('svc', D, SPLIT_DICT)
     # score
     for c in [lin_svc, svc_linear, svc_rbf]:
         score = c.cross_validation()
-        print('kernel={:<10s} score={:<15.6f}'.format(c.clf.kernel, score))
+        print('kernel={:<10s} score={:<15.2f}'.format(c.clf.kernel, score * 100))
     scores = []
     degrees = range(2, 6)
     for degree in degrees:
-        svc_poly = Monitered('svc', d, split_dict, kernel='poly', degree=degree)
+        svc_poly = Monitered('svc', D, SPLIT_DICT, kernel='poly', degree=degree)
         score = svc_poly.cross_validation()
         scores.append(score)
     print('kernel=poly')
     for degree, score in zip(degrees, scores):
-        print('  degree={:<2d}, score={:<15.6f}'.format(degree, score))
+        print('  degree={:<2d}, score={:<15.2f}'.format(degree, score * 100))
     print()
 
 
 def svm_regression():
     print('svm regression')
-    lin_svr = Monitered('lin_svr', d, split_dict)
-    svr_linear = Monitered('svr', d, split_dict, kernel='linear')
-    svr_rbf = Monitered('svr', d, split_dict, kernel='rbf')
+    lin_svr = Monitered('lin_svr', D, SPLIT_DICT)
+    lin_svr.clf.kernel = 'lin_svr'
+    svr_linear = Monitered('svr', D, SPLIT_DICT, kernel='linear')
+    svr_rbf = Monitered('svr', D, SPLIT_DICT, kernel='rbf')
     for c in [lin_svr, svr_linear, svr_rbf]:
         score = c.cross_validation()
-        print('kernel={:<10s} score={:<15.6f}'.format(c.clf.kernel, score))
+        print('kernel={:<10s} score={:<15.2f}'.format(c.clf.kernel, score * 100))
     degrees = range(2, 6)
     scores = []
     for degree in degrees:
-        svr_poly = Monitered('svr', d, split_dict, kernel='poly', degree=degree)
+        svr_poly = Monitered('svr', D, SPLIT_DICT, kernel='poly', degree=degree)
         score = svr_poly.cross_validation()
         scores.append(score)
     print('kernel=poly')
     for degree, score in zip(degrees, scores):
-        print('\tdegree={:<3d}, score={:<15.6f}'.format(degree, score))
+        print('\tdegree={:<3d}, score={:<15.2f}'.format(degree, score * 100))
     print()
 
 
@@ -196,11 +197,11 @@ def forest(name, estimators):
     print('forest {}, name={}'.format(kind, name))
     scores = []
     for i in estimators:
-        rf = Monitered(name, d, split_dict, n_estimators=i)
+        rf = Monitered(name, D, SPLIT_DICT, n_estimators=i)
         score = rf.cross_validation()
         scores.append(score)
     for i, score in zip(estimators, scores):
-        print('estimators={:<3d}, score={:<15.6f}'.format(i, score))
+        print('estimators={:<3d}, score={:<15.2f}'.format(i, score * 100))
     print()
 
 
@@ -212,26 +213,30 @@ def knn(name):
         kind = 'regressions'
     print('knn '.format(kind))
     scores = []
-    knn_range = range(2, 6)
+    knn_range = range(2, 7)
     for i in knn_range:
-        knn = Monitered(name, d, split_dict, n_neighbors=i)
+        knn = Monitered(name, D, SPLIT_DICT, n_neighbors=i)
         score = knn.cross_validation()
         scores.append(score)
     for i, score in zip(knn_range, scores):
-        print('estimators={:<3d} {:<15.6f}'.format(i, score))
+        print('estimators={:<3d} {:<15.2f}'.format(i, score * 100))
     print()
 
 
-def run_once():
+def classification():
+    global ISCLF
+    ISCLF = {
+        0: True,
+        1: True,
+        2: True,
+        3: True,
+        4: True,
+        5: True
+    }
     global INDEX
-    for INDEX in [0, 1, 4, 5]:
-        sgd('sgd')
-
-
-def run():
-    global INDEX
-    indexs = range(0, 6)
-    for INDEX in indexs:
+    # classification
+    indexes = range(0, 6)
+    for INDEX in indexes:
         print('\n======\n{}\n======'.format(utils.label_dict[INDEX]))
         sgd('sgd')
         svm_classifier()
@@ -240,21 +245,40 @@ def run():
         names = ['rf', 'ab', 'bg']
         for name in names:
             forest(name, forest_estimator_dict[name])
-            # for INDEX in [2, 3]:
-            #     sgd('sgdr')
-            #     svm_regression()
-            #     knn('knnr')
-            #     names = ['rfr', 'abr', 'bgr']
-            #     for name in names:
-            #         forest(name, forest_estimator_dict[name])
+
+
+def regression():
+    global ISCLF
+    ISCLF = {
+        0: False,
+        1: False,
+        2: False,
+        3: False,
+        4: True,
+        5: True
+    }
+    global INDEX
+    indexes = range(0, 4)
+    for INDEX in indexes:
+        print('\n======\n{}\n======'.format(utils.label_dict[INDEX]))
+        sgd('sgdr')
+        svm_regression()
+        knn('knnr')
+        names = ['rfr', 'abr', 'bgr']
+        for name in names:
+            forest(name, forest_estimator_dict[name])
+
+
+def run():
+    classification()
+    # regression()
 
 
 if __name__ == '__main__':
     utils.init_logger()
-    d = dataset.DataReader()
-    split_dict = {
+    D = dataset.DataReader()
+    SPLIT_DICT = {
         'random_state': 42,
         'train_size': 0.8
     }
-    # run_once()
     run()

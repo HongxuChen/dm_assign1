@@ -1,0 +1,196 @@
+
+======
+age
+======
+sgd: sgdr
+iter=3  score=28.28          
+iter=4  score=30.44          
+iter=5  score=31.12          
+iter=6  score=32.09          
+iter=7  score=31.53          
+
+svm regression
+kernel=lin_svr    score=37.69          
+kernel=linear     score=37.73          
+kernel=rbf        score=7.30           
+kernel=poly
+	degree=2  , score=-0.77          
+	degree=3  , score=-1.82          
+	degree=4  , score=-1.87          
+	degree=5  , score=-1.87          
+
+knn 
+estimators=2   63.81          
+estimators=3   62.31          
+estimators=4   60.41          
+estimators=5   59.39          
+
+forest regression, name=rfr
+estimators=8  , score=57.17          
+estimators=9  , score=54.38          
+estimators=10 , score=58.74          
+estimators=11 , score=57.36          
+estimators=12 , score=58.68          
+
+forest regression, name=abr
+estimators=40 , score=47.23          
+estimators=45 , score=44.64          
+estimators=50 , score=46.28          
+estimators=55 , score=48.72          
+estimators=60 , score=47.51          
+estimators=65 , score=46.29          
+
+forest regression, name=bgr
+estimators=8  , score=56.78          
+estimators=9  , score=55.01          
+estimators=10 , score=56.99          
+estimators=11 , score=55.89          
+estimators=12 , score=56.79          
+
+
+======
+height
+======
+sgd: sgdr
+iter=3  score=-36.20         
+iter=4  score=-30.45         
+iter=5  score=-34.36         
+iter=6  score=-21.31         
+iter=7  score=-16.93         
+
+svm regression
+kernel=lin_svr    score=7.81           
+kernel=linear     score=8.22           
+kernel=rbf        score=-0.43          
+kernel=poly
+	degree=2  , score=-0.63          
+	degree=3  , score=-0.66          
+	degree=4  , score=-0.66          
+	degree=5  , score=-0.66          
+
+knn 
+estimators=2   33.31          
+estimators=3   34.45          
+estimators=4   33.61          
+estimators=5   32.88          
+
+forest regression, name=rfr
+estimators=8  , score=13.59          
+estimators=9  , score=16.83          
+estimators=10 , score=20.95          
+estimators=11 , score=22.47          
+estimators=12 , score=24.47          
+
+forest regression, name=abr
+estimators=40 , score=9.92           
+estimators=45 , score=10.58          
+estimators=50 , score=11.97          
+estimators=55 , score=9.78           
+estimators=60 , score=11.24          
+estimators=65 , score=11.68          
+
+forest regression, name=bgr
+estimators=8  , score=21.91          
+estimators=9  , score=16.79          
+estimators=10 , score=17.85          
+estimators=11 , score=20.15          
+estimators=12 , score=20.61          
+
+
+======
+weight
+======
+sgd: sgdr
+iter=3  score=5.19           
+iter=4  score=5.22           
+iter=5  score=3.82           
+iter=6  score=6.06           
+iter=7  score=0.64           
+
+svm regression
+kernel=lin_svr    score=11.61          
+kernel=linear     score=11.54          
+kernel=rbf        score=0.31           
+kernel=poly
+	degree=2  , score=-0.21          
+	degree=3  , score=-0.23          
+	degree=4  , score=-0.23          
+	degree=5  , score=-0.23          
+
+knn 
+estimators=2   43.63          
+estimators=3   41.75          
+estimators=4   38.69          
+estimators=5   37.61          
+
+forest regression, name=rfr
+estimators=8  , score=17.26          
+estimators=9  , score=19.86          
+estimators=10 , score=20.00          
+estimators=11 , score=24.93          
+estimators=12 , score=27.81          
+
+forest regression, name=abr
+estimators=40 , score=15.35          
+estimators=45 , score=17.49          
+estimators=50 , score=15.56          
+estimators=55 , score=16.03          
+estimators=60 , score=16.15          
+estimators=65 , score=14.69          
+
+forest regression, name=bgr
+estimators=8  , score=16.65          
+estimators=9  , score=23.80          
+estimators=10 , score=22.74          
+estimators=11 , score=22.35          
+estimators=12 , score=21.61          
+
+
+======
+bmi
+======
+sgd: sgdr
+iter=3  score=1.75           
+iter=4  score=3.80           
+iter=5  score=5.81           
+iter=6  score=5.21           
+iter=7  score=6.98           
+
+svm regression
+kernel=lin_svr    score=13.36          
+kernel=linear     score=13.82          
+kernel=rbf        score=0.08           
+kernel=poly
+	degree=2  , score=-0.97          
+	degree=3  , score=-1.01          
+	degree=4  , score=-0.99          
+	degree=5  , score=-0.99          
+
+knn 
+estimators=2   36.25          
+estimators=3   33.92          
+estimators=4   33.42          
+estimators=5   31.77          
+
+forest regression, name=rfr
+estimators=8  , score=15.27          
+estimators=9  , score=17.28          
+estimators=10 , score=12.68          
+estimators=11 , score=18.32          
+estimators=12 , score=13.84          
+
+forest regression, name=abr
+estimators=40 , score=16.00          
+estimators=45 , score=18.05          
+estimators=50 , score=16.65          
+estimators=55 , score=17.72          
+estimators=60 , score=17.12          
+estimators=65 , score=18.32
+
+forest regression, name=bgr
+estimators=8  , score=12.08          
+estimators=9  , score=18.12          
+estimators=10 , score=16.83          
+estimators=11 , score=16.23          
+estimators=12 , score=17.58          
+
