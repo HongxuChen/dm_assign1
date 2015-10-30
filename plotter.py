@@ -4,27 +4,15 @@ import collections
 import os
 
 import matplotlib.pyplot as plt
-import numpy as np
-
 import utils
-import dataset
 
 info_dir = 'info'
 if not os.path.exists(info_dir):
     os.mkdir(info_dir)
 
-label_dict = {
-    0: 'age',
-    1: 'height',
-    2: 'weight',
-    3: 'bmi',
-    4: 'gender',
-    5: 'race'
-}
-
 
 def plot_pie(d, index):
-    fname = os.path.join(info_dir, label_dict[index] + '.png')
+    fname = os.path.join(info_dir, utils.label_dict[index] + '.png')
     if os.path.exists(fname):
         return
     size = d.shape[0]

@@ -6,6 +6,15 @@ import yaml
 
 logging_yaml = 'log.yaml'
 
+label_dict = {
+    0: 'age',
+    1: 'height',
+    2: 'weight',
+    3: 'bmi',
+    4: 'gender',
+    5: 'race'
+}
+
 isclf_dict = {
     0: True,
     1: True,

@@ -49,7 +49,7 @@ forest_estimator_dict = {
     'bg': range(8, 13),
     'gb': range(80, 131, 10),
     'rfr': range(8, 13),
-    'abr': range(40, 61, 5),
+    'abr': range(40, 66, 5),
     'bgr': range(8, 13),
     'gbr': range(80, 131, 10),
 }
@@ -119,7 +119,7 @@ class Monitered(object):
             label_feat = cleaned[:, -1]
             utils.get_logger().warning('sample:{}, label:{}'.format(sample_feats.shape, label_feat.shape))
         if utils.isclf_dict[index]:
-            utils.get_logger().warning('try grouping {}'.format(plotter.label_dict[index]))
+            utils.get_logger().warning('try grouping {}'.format(utils.label_dict[index]))
             if index not in NO_GROUP_LIST:
                 label_feat = try_group(label_feat)
             plotter.plot_pie(label_feat, index)
@@ -139,36 +139,52 @@ class Monitered(object):
 
 def sgd(name):
     print('sgd: {}'.format(name))
-    c = Monitered(name, d, split_dict)
-    score = c.cross_validation()
-    print('{:<10s} {:<15.6f}'.format(name, score))
+    for i in range(3, 8):
+        c = Monitered(name, d, split_dict, n_iter=i)
+        score = c.cross_validation()
+        print('iter={:<2d} score={:<15.6f}'.format(i, score))
     print()
 
 
 def svm_classifier():
     print('svm classification')
     lin_svc = Monitered('lin_svc', d, split_dict)
+    lin_svc.clf.kernel = 'lin_svc'
     svc_linear = Monitered('svc', d, split_dict, kernel='linear')
     svc_rbf = Monitered('svc', d, split_dict)
-    svc_poly1 = Monitered('svc', d, split_dict, kernel='poly', degree=3)
-    svc_poly2 = Monitered('svc', d, split_dict, kernel='poly', degree=5)
-    sgd = Monitered('sgd', d, split_dict)
-    for c in [lin_svc, svc_linear, svc_rbf, svc_poly1, svc_poly2, sgd]:
+    # score
+    for c in [lin_svc, svc_linear, svc_rbf]:
         score = c.cross_validation()
-        print('{:<10s}: {:<15.6f}'.format(c.ml_name, score))
+        print('kernel={:<10s} score={:<15.6f}'.format(c.clf.kernel, score))
+    scores = []
+    degrees = range(2, 6)
+    for degree in degrees:
+        svc_poly = Monitered('svc', d, split_dict, kernel='poly', degree=degree)
+        score = svc_poly.cross_validation()
+        scores.append(score)
+    print('kernel=poly')
+    for degree, score in zip(degrees, scores):
+        print('  degree={:<2d}, score={:<15.6f}'.format(degree, score))
     print()
 
 
 def svm_regression():
-    print('---svm regression---')
+    print('svm regression')
     lin_svr = Monitered('lin_svr', d, split_dict)
     svr_linear = Monitered('svr', d, split_dict, kernel='linear')
     svr_rbf = Monitered('svr', d, split_dict, kernel='rbf')
-    svr_poly1 = Monitered('svr', d, split_dict, kernel='poly', degree=3)
-    svr_poly2 = Monitered('svr', d, split_dict, kernel='poly', degree=5)
-    for c in [lin_svr, svr_linear, svr_rbf, svr_poly1, svr_poly2]:
+    for c in [lin_svr, svr_linear, svr_rbf]:
         score = c.cross_validation()
-        print('{:<10s} {:<15.6f}'.format(c.ml_name, score))
+        print('kernel={:<10s} score={:<15.6f}'.format(c.clf.kernel, score))
+    degrees = range(2, 6)
+    scores = []
+    for degree in degrees:
+        svr_poly = Monitered('svr', d, split_dict, kernel='poly', degree=degree)
+        score = svr_poly.cross_validation()
+        scores.append(score)
+    print('kernel=poly')
+    for degree, score in zip(degrees, scores):
+        print('\tdegree={:<3d}, score={:<15.6f}'.format(degree, score))
     print()
 
 
@@ -177,14 +193,14 @@ def forest(name, estimators):
         kind = 'classification'
     else:
         kind = 'regression'
-    print('forest, name={}'.format(name))
+    print('forest {}, name={}'.format(kind, name))
     scores = []
     for i in estimators:
         rf = Monitered(name, d, split_dict, n_estimators=i)
         score = rf.cross_validation()
         scores.append(score)
     for i, score in zip(estimators, scores):
-        print('i={:<2d}, score={:<15.6f}'.format(i, score))
+        print('estimators={:<3d}, score={:<15.6f}'.format(i, score))
     print()
 
 
@@ -202,7 +218,7 @@ def knn(name):
         score = knn.cross_validation()
         scores.append(score)
     for i, score in zip(knn_range, scores):
-        print('i={:<2d} {:<15.6f}'.format(i, score))
+        print('estimators={:<3d} {:<15.6f}'.format(i, score))
     print()
 
 
@@ -216,7 +232,7 @@ def run():
     global INDEX
     indexs = range(0, 6)
     for INDEX in indexs:
-        print('\n======\n{}\n======'.format(plotter.label_dict[INDEX]))
+        print('\n======\n{}\n======'.format(utils.label_dict[INDEX]))
         sgd('sgd')
         svm_classifier()
         knn('knn')
