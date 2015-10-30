@@ -24,6 +24,7 @@ estimators=2   63.81
 estimators=3   62.31          
 estimators=4   60.41          
 estimators=5   59.39          
+estimators=6   58.93          
 
 forest regression, name=rfr
 estimators=8  , score=57.17          
@@ -73,6 +74,7 @@ estimators=2   33.31
 estimators=3   34.45          
 estimators=4   33.61          
 estimators=5   32.88          
+estimators=6   31.54          
 
 forest regression, name=rfr
 estimators=8  , score=13.59          
@@ -122,6 +124,7 @@ estimators=2   43.63
 estimators=3   41.75          
 estimators=4   38.69          
 estimators=5   37.61          
+estimators=6   34.71          
 
 forest regression, name=rfr
 estimators=8  , score=17.26          
@@ -171,6 +174,7 @@ estimators=2   36.25
 estimators=3   33.92          
 estimators=4   33.42          
 estimators=5   31.77          
+estimators=6   30.17          
 
 forest regression, name=rfr
 estimators=8  , score=15.27          
@@ -185,7 +189,7 @@ estimators=45 , score=18.05
 estimators=50 , score=16.65          
 estimators=55 , score=17.72          
 estimators=60 , score=17.12          
-estimators=65 , score=18.32
+estimators=65 , score=18.43          
 
 forest regression, name=bgr
 estimators=8  , score=12.08          

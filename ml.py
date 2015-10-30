@@ -270,8 +270,8 @@ def regression():
 
 
 def run():
-    classification()
-    # regression()
+    # classification()
+    regression()
 
 
 if __name__ == '__main__':
