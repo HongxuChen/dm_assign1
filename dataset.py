@@ -61,7 +61,6 @@ class DataReader(Reader):
         return feat[:, i]
 
 
-
 if __name__ == '__main__':
     d = DataReader()
     instance = d.get_grp2_feat_instance(0, 0)
